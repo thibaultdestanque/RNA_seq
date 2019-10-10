@@ -66,3 +66,46 @@ Falini, Giuseppe, and Simona Fermani. 2004. “Chitin Mineralization.” Tissue 
 
 
 
+# Conda
+## Create conda environment
+
+
+### Trimmomatic
+```
+
+```
+
+### Gsnap
+```
+conda create -n Gmap
+conda install -n Gmap  -c bioconda bioconductor-gmapr 
+conda install -n Gmap -c bioconda gmap 
+conda install -n Gmap -c bioconda samtools
+```
+
+### samtools
+```
+
+```
+
+### Htseq-count
+```
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
