@@ -41,11 +41,11 @@ Tree folders must look like this:
 `My_folder`                
 - `main.nf`                        
 - `nextflow.config`                
-   - `Ref_Genome`                     
-        - `genome.fa`                 
-        - `genomeIndex`                
-               - 'genome index files'      
-        - `genome_annotation.gff3`    
+- `Ref_Genome`                     
+   - `genome.fa`                 
+   - `genomeIndex`                
+        - 'genome index files'      
+   - `genome_annotation.gff3`    
 - `Fastq`
    - `fastq files to analyse`
 - `Other_files`
