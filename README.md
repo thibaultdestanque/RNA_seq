@@ -81,14 +81,13 @@ Falini, Giuseppe, and Simona Fermani. 2004. “Chitin Mineralization.” Tissue 
 
 
 ## Conda
-### Create conda environment
 
-#### Trimmomatic
+### Trimmomatic
 Version 0.36
 
-Used in Trim process of main.nf `. /appli/bioinfo/trimmomatic/latest/env.sh`. 
+Used in Trim process of main.nf: `. /appli/bioinfo/trimmomatic/latest/env.sh`. 
 
-#### Gsnap
+### Gsnap
 Version 2018.07.04
 ```
 conda create -n Gmap
@@ -97,15 +96,15 @@ conda install -n Gmap -c bioconda gmap
 conda install -n Gmap -c bioconda samtools
 ```
 
-#### samtools
+### samtools
 Version 1.9
 
-Used in Format_Data process of main.nf `. /appli/bioinfo/samtools/1.9/env.sh`
+Used in Format_Data process of main.nf: `. /appli/bioinfo/samtools/1.9/env.sh`
 
-#### Htseq-count
+### Htseq-count
 Version 0.6.1
 
-Used in Htseq_count process of main.nf `. /appli/bioinfo/htseq-count/latest/env.sh`
+Used in Htseq_count process of main.nf: `. /appli/bioinfo/htseq-count/latest/env.sh`
 
 
 
