@@ -9,22 +9,26 @@ git clone https://github.com/thibaultdestanque/RNA_seq_Nextflow.git
 ```
 
 ## Import univec
+Copy / Import univec.fasta and put it in Other_files directory.
 ```
 wget Other_files/univec.fasta ftp://ftp.ncbi.nlm.nih.gov/pub/UniVec/UniVec
 ```
 
 ## Import Genome and annotation
+Import your genome and it's annotation (gff3) and copy it in Ref_Genome directory
 ```
 cp Path/to/your/genome/genome.fa Folder/where/you/clone/github/directory/Ref_Genome/genome.fa
 cp Path/to/your/annotation/annotation.gff3 Folder/where/you/clone/github/directory/Ref_Genome/annotation.gff3
 ```
 
 ## Import Fastq
+Import your fastq files to analyse and put them in Fastq Directory
 ```
 cp Path/to/your/fastq/files/*fastq Folder/where/you/clone/github/directory/Fastq/*fastq
 ```
 
 ## Launch pipeline
+To launch the pipeline, simply go to the directory `My_folder` (see below) and type: 
 ```
 nextflow run main.nf
 ```
@@ -33,7 +37,7 @@ nextflow run main.nf
 
 ## Working directory
 
-Tree folders should look like this: 
+Tree folders must look like this: 
 
 `My_folder`                
 - `main.nf`                        
