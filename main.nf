@@ -69,6 +69,8 @@ log.info ""
 log.info "        Process are stored in:"
 log.info "            work/"
 log.info ""
+//log.info "        Scratch: ${params.scratch_path}"
+log.info ""
 log.info ""
 log.info "        ==================="
 log.info "          Launch pipeline  "
@@ -110,7 +112,7 @@ process Trim {
     memory '60 GB'
     echo true
     scratch '/home1/scratch/tdestanq/'
-    // conda 'trimmomatic=0.36'
+    conda 'bioconda::trimmomatic=0.36'
 
     input:
     set pair_id, file(reads) from read_pairs
@@ -123,7 +125,6 @@ process Trim {
 
     shell:
     """
-    . /appli/bioinfo/trimmomatic/latest/env.sh
     trimmomatic PE -threads 8 -phred33 ${reads} \
     	${pair_id}_trim_R1_paired.fastq.gz \
     	${pair_id}_trim_R1_unpaired.fastq.gz \
@@ -140,13 +141,13 @@ process Trim {
  */
 process Index_Genome {
 
-	time'24h'
+    time'24h'
     cpus 1
     queue 'sequentiel'
     memory '30 GB'
-    //conda 'bioconda::gmap=2018.07.04'
     echo true
     scratch '/home1/scratch/tdestanq/'
+    conda 'bioconda::gmap=2018.07.04'
     
     input:
     file genome_fa from genome_fa_file
@@ -158,7 +159,6 @@ process Index_Genome {
 
     shell:
     """
-    source activate Gmap # Activate Gsnap
     gmap_build --dir=${params.genome_path} ${genome_fa} -d ${params.genomeIndex} >& /home1/scratch/tdestanq/Index_Genome.log 2>&1
     """
 }
@@ -173,9 +173,9 @@ process Alignment {
     cpus 16
     queue 'omp'
     memory '60 GB'
-    //conda 'bioconda::gmap=2018.07.04'
     echo true
     scratch '/home1/scratch/tdestanq/'
+    conda 'bioconda::gmap=2018.07.04'
     
     input:
     file genome from genome
@@ -188,7 +188,7 @@ process Alignment {
     shell:
     """
     bash
-    source activate Gmap
+    #source activate Gmap
     # Retrieve base name from samples
     ls *_trim_R1_paired.fastq.gz | sed 's/_trim_R1_paired.fastq.gz//g' > Name_tmp.txt;
     base_name=`cat Name_tmp.txt`;
@@ -246,9 +246,9 @@ process Htseq_count {
     cpus 1
     queue 'sequentiel'
     memory '50 GB'
-    //conda 'Gmap'
     echo true
     scratch '/home1/scratch/tdestanq/'
+    conda 'bioconda::htseq=0.6.1'
     
     input:
     file sorted_bam from read_mapped_sort_bam
@@ -259,7 +259,7 @@ process Htseq_count {
 
     shell:
     """
-    . /appli/bioinfo/htseq-count/latest/env.sh
+    #. /appli/bioinfo/htseq-count/latest/env.sh
     htseq-count -f "bam" -s "no" -r "pos" -t "gene" -i "Name" --mode "union" ${sorted_bam} ${GFF3_annotation} >& ${sorted_bam}_htseq_count.txt 2> /home1/scratch/tdestanq/HtseqCount.log
     """
     // .${params.add_header} >& /home1/scratch/tdestanq/Format_Data_for_R_add_header.log 2>&1
@@ -275,6 +275,7 @@ process Format_data_for_R_1 {
     queue 'sequentiel'
     memory '50 GB'
     echo true
+    //conda 'bioconda::samtools=1.9'
     scratch '/home1/scratch/tdestanq/'
     
     input:
@@ -299,6 +300,8 @@ process Format_data_for_R_2 {
     queue 'sequentiel'
     memory '50 GB'
     echo true
+    //conda 'bioconda::samtools=1.9'
+
     scratch '/home1/scratch/tdestanq/'
     
     input:
