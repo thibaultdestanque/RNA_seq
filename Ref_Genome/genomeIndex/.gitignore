@@ -1,0 +1,16 @@
+*.chromosome
+*.chromosome.iit
+*.chrsubset
+*.contig
+*.contig.iit
+*.genomebits128
+*.genomecomp
+*.maps
+*.ref081locoffsets64meta
+*.ref081locoffsets64strm
+*.ref081locpositions
+*.ref081loctable
+*.ref153offsets64meta
+*.ref153offsets64strm
+*.ref153positions
+*.version

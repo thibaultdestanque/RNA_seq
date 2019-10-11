@@ -1,0 +1,12 @@
+*.err
+*.out
+*.sam
+*.bam
+*.gz
+*.fastq
+*.fasta
+*.fq
+work/
+results/
+pipeline_info/
+results/
