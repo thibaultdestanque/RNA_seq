@@ -1,33 +1,37 @@
 #!/usr/bin/env nextflow
 
 
-
-
 def helpMessage() {
   log.info"""
 
-  =============================
-    RNA-seq pipeline nextflow 
-  =============================
-  Usage:
-  The typical command for running the pipeline is as follows:
-  nextflow run main.nf
+    =============================
+      RNA-seq pipeline nextflow 
+    =============================
+    
+    Usage:
+    The typical command for running the pipeline is as follows:
+    nextflow run main.nf  
 
-  Tree folders should look like this: 
-    DATA_TO_ANALYSE_FOLDER                  # Folder
-        '=> main.nf                         # Script nextflow
-        '=> nextflow.config                 # config nextflow
-        '=> Ref_Genome                      # Folder
-            '=> genome.fa                   # Reference genome in fasta
-            '=> genomeIndex                 # Folder which will store index reference genome
-                '=> genome index files      # Files
-            '=> genome_annotation.gff3      # Annotation of genome in gff3 
-        '=> Fastq                           # Folder
-            '=> fastq files to analyse      # Files to analysis in fastq
-        '=> Other_files                     # Folder
-            '=> adapter file                # adapter file
+    Tree folders should look like this: 
+      DATA_TO_ANALYSE_FOLDER                  # Folder
+          '=> main.nf                         # Script nextflow
+          '=> nextflow.config                 # config nextflow
+          '=> Ref_Genome                      # Folder
+              '=> genome.fa                   # Reference genome in fasta
+              '=> genomeIndex                 # Folder which will store index reference genome
+                  '=> genome index files      # Files
+              '=> genome_annotation.gff3      # Annotation of genome in gff3 
+          '=> Fastq                           # Folder
+              '=> fastq files to analyse      # Files to analysis in fastq
+          '=> Other_files                     # Folder
+              '=> adapter file                # adapter file
 
-
+    Check presence of: 
+     - genome.fa
+     - genome_annotation.gff3
+     - fastq files
+     - adapter files
+     - join_multiple_files script
 
   """.stripIndent()
 }
@@ -42,8 +46,6 @@ if (params.help){
   helpMessage()
   exit 0
 }
-
-
 
 
 /*
@@ -69,8 +71,7 @@ log.info ""
 log.info "        Process are stored in:"
 log.info "            work/"
 log.info ""
-//log.info "        Scratch: ${params.scratch_path}"
-log.info ""
+log.info "        TEST: ${params.Path}${params.test}"
 log.info ""
 log.info "        ==================="
 log.info "          Launch pipeline  "
@@ -102,11 +103,12 @@ Channel
 /*
  * Step 1. Trim sequence with trimmomatic
  */
-process Trim {
-	tag "$pair_id"
-	publishDir params.outdir, mode: 'copy'
 
-	time'2h'
+process Trim {
+    tag "$pair_id"
+    publishDir params.outdir, mode: 'copy'
+
+    time'2h'
     cpus 8
     queue 'omp'
     memory '60 GB'
@@ -122,7 +124,6 @@ process Trim {
     file "*_paired.fastq.gz" into paired_read_trimed
     file "*_unpaired.fastq.gz" into unpaired_read_trimed
 
-
     shell:
     """
     trimmomatic PE -threads 8 -phred33 ${reads} \
@@ -136,9 +137,12 @@ process Trim {
     """
 }
 
+
+
 /*
  * Step 2. Index reference genome
  */
+
 process Index_Genome {
 
     time'24h'
@@ -163,13 +167,16 @@ process Index_Genome {
     """
 }
 
+
+
 /*
  * Step 3. Align reads on reference genome
  */
-process Alignment {
-	publishDir params.outdir, mode: 'copy'
 
-	time'23h'
+process Alignment {
+    publishDir params.outdir, mode: 'copy'
+
+    time'23h'
     cpus 16
     queue 'omp'
     memory '60 GB'
@@ -202,6 +209,8 @@ process Alignment {
     rm Name_tmp.txt
     """
 }
+
+
 
 /*
  * Step 4. Format data
@@ -262,10 +271,13 @@ process Htseq_count {
     #. /appli/bioinfo/htseq-count/latest/env.sh
     htseq-count -f "bam" -s "no" -r "pos" -t "gene" -i "Name" --mode "union" ${sorted_bam} ${GFF3_annotation} >& ${sorted_bam}_htseq_count.txt 2> /home1/scratch/tdestanq/HtseqCount.log
     """
-    // .${params.add_header} >& /home1/scratch/tdestanq/Format_Data_for_R_add_header.log 2>&1
-
 }
 
+
+
+/*
+ * Step 6. Format Data: Add name in file
+ */
 
 process Format_data_for_R_1 {
     publishDir params.outdir, mode: 'copy'
@@ -275,8 +287,8 @@ process Format_data_for_R_1 {
     queue 'sequentiel'
     memory '50 GB'
     echo true
-    //conda 'bioconda::samtools=1.9'
     scratch '/home1/scratch/tdestanq/'
+    //conda 'bioconda::samtools=1.9'
     
     input:
     file htseq_count from htseq_count
@@ -292,30 +304,34 @@ process Format_data_for_R_1 {
     """
 }
 
+
+
+/*
+ * Step 7. Format data: merge files
+ */
+
 process Format_data_for_R_2 {
-    publishDir params.outdir, mode: 'copy'
+    //publishDir params.outdir, mode: 'copy'
 
     time'4h'
     cpus 1
     queue 'sequentiel'
     memory '50 GB'
     echo true
+    scratch '/home1/scratch/tdestanq/'
     //conda 'bioconda::samtools=1.9'
 
-    scratch '/home1/scratch/tdestanq/'
-    
     input:
     file htseq_count_header from format_data_for_R_1.collect()
 
     output:
-    file "join_devlarve.txt" into all_file
+    file "join_devlarve.txt" into join_devlarve
 
     shell:
     """
-    join ${htseq_count_header} >& join_devlarve.txt 2> /home1/scratch/tdestanq/Format_Data_for_R_join_multiplefile.log
+    ${params.join_multiple_file} ${htseq_count_header} >& join_devlarve.txt 2> /home1/scratch/tdestanq/Format_Data_for_R_join_multiplefile.log
     """
 }
-
 
 
 
