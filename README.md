@@ -100,7 +100,8 @@ Version 0.6.1
 Used in Htseq_count process of main.nf: `conda 'bioconda::htseq=0.6.1'`
 
 
-
+### RNA seq analysis with R
+Using RNAseqAnalysis_last_annotation.R script
 
 
 
